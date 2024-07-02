@@ -97,6 +97,9 @@ const Translator = () => {
   }
 
   const handleTranslate = async () => {
+    if (!inputText && !transcript) {
+      return toast.error("Text required for translate");
+    }
     setLoading(true);
     try {
       const response = await axios.post(
@@ -118,8 +121,12 @@ const Translator = () => {
   };
 
   const handleCopy = () => {
-    setCopied();
-    toast.success("Copied to clipboard!");
+    if (translatedText) {
+      setCopied(translatedText);
+      toast.success("Copied to clipboard!");
+    } else {
+      toast.info("First Translate");
+    }
   };
 
   const handleReset = () => {
@@ -131,7 +138,7 @@ const Translator = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="md" style={{ marginTop: "50px" }}>
+      <Container style={{ marginTop: "50px" }}>
         <ToastContainer />
         <Paper elevation={3}>
           <AppBar position="static" style={{ marginBottom: "20px" }}>
@@ -141,115 +148,120 @@ const Translator = () => {
               </Typography>
             </Toolbar>
           </AppBar>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                label="Enter text to translate"
-                multiline
-                rows={4}
-                variant="outlined"
-                fullWidth
-                value={inputText || transcript}
-                onChange={(e) => {
-                  setInputText(e.target.value);
-                  resetTranscript();
-                }}
-                style={{ marginBottom: "20px" }}
-              />
+          <Grid
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            gap={3}
+          >
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Enter text to translate"
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                  fullWidth
+                  value={inputText || transcript}
+                  onChange={(e) => {
+                    setInputText(e.target.value);
+                    resetTranscript();
+                  }}
+                  style={{ marginBottom: "20px" }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  select
+                  label="From"
+                  value={fromLanguage}
+                  onChange={(e) => setFromLanguage(e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                >
+                  {languages.map((lang) => (
+                    <MenuItem key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  select
+                  label="To"
+                  value={toLanguage}
+                  onChange={(e) => setToLanguage(e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                >
+                  {languages.map((lang) => (
+                    <MenuItem key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleTranslate}
+                  style={{ marginRight: "10px" }}
+                  disabled={loading}
+                >
+                  {loading ? <CircularProgress size={24} /> : "Translate"}
+                </Button>
+                <IconButton
+                  color="primary"
+                  onClick={SpeechRecognition.startListening}
+                  style={{ marginRight: "10px" }}
+                >
+                  <Mic />
+                </IconButton>
+                <IconButton color="primary" onClick={() => {}}>
+                  <VolumeUp />
+                </IconButton>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <TextField
-                select
-                label="From"
-                value={fromLanguage}
-                onChange={(e) => setFromLanguage(e.target.value)}
-                variant="outlined"
-                fullWidth
-              >
-                {languages.map((lang) => (
-                  <MenuItem key={lang.code} value={lang.code}>
-                    {lang.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                select
-                label="To"
-                value={toLanguage}
-                onChange={(e) => setToLanguage(e.target.value)}
-                variant="outlined"
-                fullWidth
-              >
-                {languages.map((lang) => (
-                  <MenuItem key={lang.code} value={lang.code}>
-                    {lang.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleTranslate}
-                style={{ marginRight: "10px" }}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : "Translate"}
-              </Button>
-              <IconButton
-                color="primary"
-                onClick={SpeechRecognition.startListening}
-                style={{ marginRight: "10px" }}
-              >
-                <Mic />
-              </IconButton>
-              <IconButton color="primary" onClick={() => {}}>
-                <VolumeUp />
-              </IconButton>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                gutterBottom
-                style={{ marginTop: "20px" }}
-              >
-                Translated Text
-              </Typography>
-              <Paper
-                elevation={1}
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Typography variant="h5" gutterBottom>
+                  Translated Text
+                </Typography>
+                <Paper
+                  elevation={1}
+                  style={{
+                    padding: "10px",
+                    minHeight: "100px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setTextToCopy(translatedText)}
+                >
+                  <Typography variant="body1">{translatedText}</Typography>
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                xs={12}
                 style={{
-                  padding: "10px",
-                  minHeight: "100px",
-                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
                 }}
-                onClick={() => setTextToCopy(translatedText)}
               >
-                <Typography variant="body1">{translatedText}</Typography>
-              </Paper>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: "20px",
-              }}
-            >
-              <Button variant="contained" onClick={handleCopy}>
-                {isCopied ? "Copied!" : "Copy to clipboard"}
-                <FileCopy />
-              </Button>
-              <Button variant="contained" onClick={handleReset}>
-                Reset
-              </Button>
+                <Button variant="contained" onClick={handleCopy}>
+                  {isCopied ? "Copied!" : "Copy to clipboard"}
+                  <FileCopy />
+                </Button>
+                <Button variant="contained" onClick={handleReset}>
+                  Reset
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Paper>
