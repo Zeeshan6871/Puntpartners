@@ -66,10 +66,8 @@ The Translation App is a web-based application that leverages Gemini AI for tran
 
 ## Screenshots
 
-![Home Page](path_to_home_page_screenshot)
-![Translation Page](path_to_translation_page_screenshot)
-![Speech-to-Text Page](path_to_speech_to_text_page_screenshot)
-
+![image](https://github.com/Zeeshan6871/Puntpartners/assets/154689762/9aad203a-be2c-46f9-a90d-b4f1cd3fa637)
+![image](https://github.com/Zeeshan6871/Puntpartners/assets/154689762/89e0ca72-6833-41c5-bf25-6e1d1644b630)
 ## API Reference
 
 ### Endpoints
