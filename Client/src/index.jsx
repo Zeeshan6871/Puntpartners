@@ -95,11 +95,14 @@ const Translator = () => {
 
   const handleTranslate = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/translate", {
-        text: inputText || transcript,
-        fromLanguage,
-        toLanguage,
-      });
+      const response = await axios.post(
+        "https://puntpartners.onrender.com/api/translate",
+        {
+          text: inputText || transcript,
+          fromLanguage,
+          toLanguage,
+        }
+      );
       setTranslatedText(response.data.translatedText);
     } catch (error) {
       console.error("Error translating text", error);
