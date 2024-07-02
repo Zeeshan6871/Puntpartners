@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -13,6 +12,7 @@ import {
   Grid,
   AppBar,
   Toolbar,
+  CircularProgress,
 } from "@mui/material";
 import { Mic, VolumeUp, FileCopy } from "@mui/icons-material";
 import SpeechRecognition, {
@@ -20,6 +20,8 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import useClipboard from "react-use-clipboard";
 import { createTheme, ThemeProvider } from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 const languages = [
@@ -58,7 +60,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           padding: "20px",
-          backgroundColor: "#fffff",
+          backgroundColor: "#ffffff",
         },
       },
     },
@@ -76,7 +78,8 @@ const Translator = () => {
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [fromLanguage, setFromLanguage] = useState("en");
-  const [toLanguage, setToLanguage] = useState("es");
+  const [toLanguage, setToLanguage] = useState("hindi");
+  const [loading, setLoading] = useState(false);
   const {
     transcript,
     listening,
@@ -94,6 +97,7 @@ const Translator = () => {
   }
 
   const handleTranslate = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(
         "https://puntpartners.onrender.com/api/translate",
@@ -104,14 +108,31 @@ const Translator = () => {
         }
       );
       setTranslatedText(response.data.translatedText);
+      toast.success("Translation successful!");
     } catch (error) {
       console.error("Error translating text", error);
+      toast.error("Error translating text");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCopy = () => {
+    setCopied();
+    toast.success("Copied to clipboard!");
+  };
+
+  const handleReset = () => {
+    resetTranscript();
+    setInputText("");
+    setTranslatedText("");
+    toast.info("Transcript reset!");
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="md" style={{ marginTop: "50px" }}>
+        <ToastContainer />
         <Paper elevation={3}>
           <AppBar position="static" style={{ marginBottom: "20px" }}>
             <Toolbar>
@@ -178,8 +199,9 @@ const Translator = () => {
                 color="primary"
                 onClick={handleTranslate}
                 style={{ marginRight: "10px" }}
+                disabled={loading}
               >
-                Translate
+                {loading ? <CircularProgress size={24} /> : "Translate"}
               </Button>
               <IconButton
                 color="primary"
@@ -221,11 +243,11 @@ const Translator = () => {
                 marginTop: "20px",
               }}
             >
-              <Button variant="contained" onClick={setCopied}>
+              <Button variant="contained" onClick={handleCopy}>
                 {isCopied ? "Copied!" : "Copy to clipboard"}
                 <FileCopy />
               </Button>
-              <Button variant="contained" onClick={resetTranscript}>
+              <Button variant="contained" onClick={handleReset}>
                 Reset
               </Button>
             </Grid>
