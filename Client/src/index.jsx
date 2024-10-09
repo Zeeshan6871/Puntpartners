@@ -31,6 +31,7 @@ const languages = [
   { code: "es", name: "Spanish" },
   { code: "fr", name: "French" },
   { code: "de", name: "German" },
+  {code:"tel",name:"Telugu"},
   // Add more languages as needed
 ];
 
